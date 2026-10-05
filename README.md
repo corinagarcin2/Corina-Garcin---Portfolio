@@ -23,10 +23,9 @@ Projects:
 3. Wokwi 3.3V Voltmeter — A microcontroller project that uses a potentiometer voltage divider and OLED display to measure and display voltage. (Link: Wokwi/GitHub placeholder)
 
 Contact:
-- Email: your.email@example.com
-- GitHub: https://github.com/your-github
-- LinkedIn: https://www.linkedin.com/in/corinagarcin/?utm_source=chatgpt.com
-
+- Email:corinagarcin2@gmail.com
+- GitHub:[ https://github.com/your-github](https://github.com/corinagarcin2)
+- LinkedIn: https://www.linkedin.com/in/corinagarcin
 Next steps / suggestions:
 - Replace placeholder links and the email address with your real GitHub and contact email.
 - Add screenshots or demo links for each project.
