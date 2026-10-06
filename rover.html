@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Autonomous Lunar Rover | Corina Garcin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="rover.css">
+</head>
+
+<body>
+
+  <header class="rover-header">
+
+    <a href="index.html#projects" class="back-button">
+      ← BACK TO PORTFOLIO
+    </a>
+
+    <div class="header-text">
+      <p class="eyebrow">INTERACTIVE PROJECT</p>
+
+      <h1>AUTONOMOUS<br>LUNAR ROVER</h1>
+
+      <p class="subtitle">
+        Navigate the lunar surface, avoid obstacles, collect regolith,
+        and complete the mission.
+      </p>
+    </div>
+
+  </header>
+
+
+  <main class="game-section">
+
+    <!-- LEFT SIDE: GAME -->
+    <section class="game-container">
+
+      <div class="game-topbar">
+
+        <div>
+          <span class="label">MODE</span>
+          <span id="modeDisplay">MANUAL</span>
+        </div>
+
+        <div>
+          <span class="label">BATTERY</span>
+          <span id="batteryDisplay">100%</span>
+        </div>
+
+        <div>
+          <span class="label">REGOLITH</span>
+          <span id="regolithDisplay">0</span>
+        </div>
+
+      </div>
+
+
+      <!-- GAME CANVAS -->
+      <canvas
+        id="roverCanvas"
+        width="800"
+        height="600"
+      ></canvas>
+
+
+      <!-- CONTROLS -->
+      <div class="game-controls">
+
+        <button id="manualButton">
+          MANUAL
+        </button>
+
+        <button id="autoButton">
+          AUTO
+        </button>
+
+        <button id="resetButton">
+          NEW MISSION
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- RIGHT SIDE: INFORMATION -->
+    <aside class="mission-panel">
+
+      <p class="panel-label">MISSION CONTROL</p>
+
+      <h2>MISSION</h2>
+
+      <p id="missionStatus">
+        Navigate to the regolith collection zone.
+      </p>
+
+
+      <div class="mission-info">
+
+        <div class="info-row">
+          <span>STATUS</span>
+          <strong id="statusDisplay">READY</strong>
+        </div>
+
+        <div class="info-row">
+          <span>CONTROL</span>
+          <strong id="controlDisplay">MANUAL</strong>
+        </div>
+
+        <div class="info-row">
+          <span>ROUTE</span>
+          <strong id="routeDisplay">NONE</strong>
+        </div>
+
+      </div>
+
+
+      <div class="instructions">
+
+        <h3>CONTROLS</h3>
+
+        <p>
+          <strong>W A S D</strong>
+          Move rover
+        </p>
+
+        <p>
+          <strong>Arrow Keys</strong>
+          Move rover
+        </p>
+
+        <p>
+          <strong>M</strong>
+          Toggle manual / autonomous
+        </p>
+
+      </div>
+
+
+      <div class="legend">
+
+        <h3>MISSION MAP</h3>
+
+        <p>■ Rover</p>
+        <p>● Rock / Crater</p>
+        <p>▦ Regolith Zone</p>
+        <p>◆ Berm / Dump Zone</p>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+
+  <footer>
+    <p>
+      Designed & developed by Corina Garcin
+    </p>
+
+    <a
+      href="https://github.com/corinagarcin2/Autonomous-Lunar-Rover"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      VIEW SOURCE CODE →
+    </a>
+  </footer>
+
+
+  <script src="rover.js"></script>
+
+</body>
+
+</html>
