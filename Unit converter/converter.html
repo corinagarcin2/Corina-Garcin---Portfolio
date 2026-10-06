@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Engineering Unit Converter | Corina Garcin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="converter.css">
+</head>
+
+<body>
+
+  <header class="converter-header">
+
+    <a href="index.html#projects" class="back-button">
+      ← BACK TO PORTFOLIO
+    </a>
+
+    <div class="header-content">
+
+      <p class="eyebrow">INTERACTIVE ENGINEERING TOOL</p>
+
+      <h1>
+        ENGINEERING<br>
+        UNIT CONVERTER
+      </h1>
+
+      <p class="subtitle">
+        Convert common engineering and scientific units quickly
+        with clear values, symbols, and conversion results.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <main class="converter-section">
+
+    <section class="converter-card">
+
+      <!-- CATEGORY -->
+
+      <div class="field-group">
+
+        <label for="category">
+          CONVERSION TYPE
+        </label>
+
+        <select id="category">
+
+          <option value="length">Length</option>
+          <option value="area">Area</option>
+          <option value="mass">Mass</option>
+          <option value="temperature">Temperature</option>
+          <option value="pressure">Pressure</option>
+          <option value="energy">Energy</option>
+          <option value="power">Power</option>
+
+        </select>
+
+      </div>
+
+
+      <!-- INPUT -->
+
+      <div class="conversion-grid">
+
+        <div class="unit-box">
+
+          <label for="inputValue">
+            FROM
+          </label>
+
+          <input
+            type="number"
+            id="inputValue"
+            placeholder="Enter value"
+            step="any"
+          >
+
+          <select id="fromUnit"></select>
+
+        </div>
+
+
+        <!-- SWAP -->
+
+        <button
+          id="swapButton"
+          class="swap-button"
+          aria-label="Swap units"
+        >
+          ⇄
+        </button>
+
+
+        <!-- OUTPUT -->
+
+        <div class="unit-box">
+
+          <label for="resultValue">
+            TO
+          </label>
+
+          <input
+            type="text"
+            id="resultValue"
+            placeholder="Result"
+            readonly
+          >
+
+          <select id="toUnit"></select>
+
+        </div>
+
+      </div>
+
+
+      <!-- FULL RESULT -->
+
+      <div class="result-panel">
+
+        <p class="result-label">
+          CONVERSION RESULT
+        </p>
+
+        <h2 id="fullResult">
+          Enter a value to begin.
+        </h2>
+
+        <p id="conversionDetails">
+          Select your units and the converter will calculate the result.
+        </p>
+
+      </div>
+
+
+      <!-- QUICK EXAMPLES -->
+
+      <div class="quick-section">
+
+        <p class="quick-title">
+          QUICK CONVERSIONS
+        </p>
+
+        <div class="quick-buttons">
+
+          <button data-category="length" data-value="1" data-from="ft" data-to="m">
+            1 ft → m
+          </button>
+
+          <button data-category="length" data-value="1" data-from="in" data-to="mm">
+            1 in → mm
+          </button>
+
+          <button data-category="pressure" data-value="1" data-from="psi" data-to="kPa">
+            1 psi → kPa
+          </button>
+
+          <button data-category="power" data-value="1" data-from="hp" data-to="kW">
+            1 hp → kW
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- INFORMATION PANEL -->
+
+    <aside class="info-panel">
+
+      <p class="panel-label">
+        AVAILABLE CONVERSIONS
+      </p>
+
+      <div class="conversion-list">
+
+        <div>
+          <span>01</span>
+          <strong>LENGTH</strong>
+          <p>mm · cm · m · km · in · ft · yd · mi</p>
+        </div>
+
+        <div>
+          <span>02</span>
+          <strong>AREA</strong>
+          <p>mm² · cm² · m² · km² · in² · ft²</p>
+        </div>
+
+        <div>
+          <span>03</span>
+          <strong>MASS</strong>
+          <p>mg · g · kg · oz · lb</p>
+        </div>
+
+        <div>
+          <span>04</span>
+          <strong>TEMPERATURE</strong>
+          <p>°C · °F · K</p>
+        </div>
+
+        <div>
+          <span>05</span>
+          <strong>PRESSURE</strong>
+          <p>Pa · kPa · MPa · psi · bar</p>
+        </div>
+
+        <div>
+          <span>06</span>
+          <strong>ENERGY</strong>
+          <p>J · kJ · Wh · kWh</p>
+        </div>
+
+        <div>
+          <span>07</span>
+          <strong>POWER</strong>
+          <p>W · kW · hp</p>
+        </div>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+
+  <footer>
+
+    <p>
+      Designed & developed by Corina Garcin
+    </p>
+
+    <a href="index.html#projects">
+      VIEW MORE PROJECTS →
+    </a>
+
+  </footer>
+
+
+  <script src="converter.js"></script>
+
+</body>
+
+</html>
