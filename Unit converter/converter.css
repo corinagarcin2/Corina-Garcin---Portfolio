@@ -1,624 +1,392 @@
-/* =========================================================
-   ENGINEERING UNIT CONVERTER
-   Soft Nude / Blush Portfolio Theme
-   ========================================================= */
-
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 :root {
-  --background: #f8f3ef;
-  --card: #fffaf7;
-  --card-soft: #f7ebe5;
-
-  --pink: #d9a092;
-  --pink-dark: #ad6f63;
-  --pink-light: #efd6ce;
-
-  --cream: #fdf8f4;
-  --border: #ead8d0;
-
-  --text: #302522;
-  --muted: #8c746d;
-
-  --shadow: 0 12px 35px rgba(98, 68, 58, 0.08);
+  --background: #f8f3ee;
+  --card: #fffdfb;
+  --blush: #f7e6ee;
+  --pink: #d86d9d;
+  --pink-deep: #ba3d7f;
+  --text: #302b2d;
+  --muted: #716a6d;
+  --border: rgba(186, 61, 127, 0.16);
+  --shadow: 0 16px 42px rgba(48, 35, 41, 0.07);
 }
 
 html {
+  min-width: 320px;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: "Manrope", sans-serif;
-  background:
-    radial-gradient(circle at 80% 10%, #efd8d0 0%, transparent 25%),
-    linear-gradient(135deg, #fbf7f4 0%, #f5ece7 100%);
-  color: var(--text);
   min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
+button,
+input,
+select {
+  font: inherit;
+}
 
-/* =========================================================
-   HEADER
-   ========================================================= */
+.converter-header,
+.converter-section,
+footer {
+  width: min(100% - 40px, 920px);
+  margin-right: auto;
+  margin-left: auto;
+}
 
 .converter-header {
-  max-width: 1400px;
-  margin: auto;
-  padding: 40px 45px 30px;
+  padding-top: 34px;
 }
 
 .back-button {
-  display: inline-block;
-
-  color: var(--pink-dark);
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  color: var(--pink-deep);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-decoration: none;
-
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-
-  transition: 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .back-button:hover {
-  transform: translateX(-4px);
+  color: var(--text);
+  transform: translateX(-3px);
 }
 
 .header-content {
-  margin-top: 55px;
-  max-width: 850px;
+  max-width: 700px;
+  margin: 38px 0 25px;
+}
+
+.eyebrow,
+.field-group label,
+.unit-box label,
+.result-label,
+.quick-title,
+.panel-label {
+  color: var(--pink-deep);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
 }
 
 .eyebrow {
-  color: var(--pink-dark);
-
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 5px;
-
-  margin-bottom: 18px;
+  margin: 0 0 12px;
 }
 
 .header-content h1 {
-  font-family: Georgia, "Times New Roman", serif;
-
-  font-size: clamp(52px, 7vw, 92px);
-  font-weight: 400;
-
-  line-height: 0.92;
-  letter-spacing: -4px;
-
-  color: #312421;
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.065em;
+  line-height: 1.08;
 }
 
 .subtitle {
-  max-width: 680px;
-
-  margin-top: 28px;
-
-  color: #856b64;
-
-  font-size: 15px;
-  line-height: 1.8;
+  max-width: 580px;
+  margin: 15px 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
 }
-
-
-/* =========================================================
-   MAIN LAYOUT
-   ========================================================= */
 
 .converter-section {
-  max-width: 1400px;
-
-  margin: auto;
-  padding: 25px 45px 50px;
-
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 2.1fr)
-    minmax(290px, 0.9fr);
-
-  gap: 22px;
+  gap: 26px;
+  padding: 0 0 26px;
 }
-
-
-/* =========================================================
-   MAIN CONVERTER CARD
-   ========================================================= */
 
 .converter-card {
-  background: rgba(255, 250, 247, 0.92);
-
-  border: 1px solid rgba(220, 190, 180, 0.55);
-
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid var(--border);
   border-radius: 24px;
-
-  padding: 32px;
-
+  background: var(--card);
   box-shadow: var(--shadow);
-
-  backdrop-filter: blur(12px);
 }
 
-
-/* =========================================================
-   CATEGORY
-   ========================================================= */
-
 .field-group {
-  margin-bottom: 32px;
+  max-width: 360px;
+  margin-bottom: 28px;
 }
 
 .field-group label,
 .unit-box label {
   display: block;
-
-  color: var(--pink-dark);
-
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 3px;
-
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 select,
-input {
+.unit-box input {
   width: 100%;
-
-  font-family: inherit;
-
+  height: 48px;
+  border: 1px solid rgba(112, 91, 101, 0.2);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
   outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 select {
   appearance: none;
-
-  background:
-    linear-gradient(45deg, transparent 50%, var(--pink-dark) 50%)
-      calc(100% - 18px) calc(50% - 3px) / 5px 5px no-repeat,
-    linear-gradient(135deg, var(--pink-dark) 50%, transparent 50%)
-      calc(100% - 13px) calc(50% - 3px) / 5px 5px no-repeat,
-    #fffaf7;
-
-  color: var(--text);
-
-  border: 1px solid var(--border);
-
-  border-radius: 14px;
-
-  padding: 15px 40px 15px 16px;
-
+  padding: 0 42px 0 14px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--pink-deep) 50%),
+    linear-gradient(135deg, var(--pink-deep) 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 21px,
+    calc(100% - 12px) 21px;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
   cursor: pointer;
-
-  transition: 0.2s ease;
 }
 
 select:hover,
-select:focus {
-  border-color: var(--pink);
+.unit-box input:hover {
+  border-color: rgba(186, 61, 127, 0.38);
 }
 
-
-/* =========================================================
-   CONVERSION INPUTS
-   ========================================================= */
+select:focus-visible,
+.unit-box input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(186, 61, 127, 0.2);
+  outline-offset: 2px;
+}
 
 .conversion-grid {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    60px
-    minmax(0, 1fr);
-
-  align-items: center;
-
+  grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+  align-items: end;
   gap: 18px;
 }
 
 .unit-box {
-  background: #fbf2ed;
-
-  border: 1px solid var(--border);
-
-  border-radius: 20px;
-
-  padding: 24px;
+  min-width: 0;
 }
 
 .unit-box input {
-  background: #fffdfb;
-
-  color: var(--text);
-
-  border: 1px solid #eadbd5;
-
-  border-radius: 13px;
-
-  padding: 17px;
-
-  margin-bottom: 12px;
-
-  font-family: Georgia, "Times New Roman", serif;
-
-  font-size: 34px;
+  display: block;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 
 .unit-box input::placeholder {
-  color: #c7aea6;
+  color: #aaa0a4;
+  font-size: 0.95rem;
+  font-weight: 400;
 }
 
 .unit-box input:focus {
   border-color: var(--pink);
+  box-shadow: 0 0 0 3px rgba(216, 109, 157, 0.1);
 }
 
-
-/* =========================================================
-   SWAP BUTTON
-   ========================================================= */
+.unit-box input[readonly] {
+  background: #fbf5f8;
+  color: var(--pink-deep);
+}
 
 .swap-button {
-  width: 58px;
-  height: 58px;
-
-  border: none;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  margin-bottom: 29px;
+  border: 1px solid rgba(186, 61, 127, 0.22);
   border-radius: 50%;
-
-  background:
-    linear-gradient(
-      135deg,
-      #dba79a,
-      #c98578
-    );
-
-  color: white;
-
-  font-size: 23px;
-
+  background: var(--blush);
+  color: var(--pink-deep);
+  font-size: 1.25rem;
   cursor: pointer;
-
-  box-shadow:
-    0 8px 20px rgba(180, 118, 103, 0.22);
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .swap-button:hover {
-  transform: rotate(180deg) scale(1.05);
-
-  box-shadow:
-    0 12px 25px rgba(180, 118, 103, 0.3);
+  background: var(--pink-deep);
+  color: #fff;
 }
-
-
-/* =========================================================
-   RESULT PANEL
-   ========================================================= */
 
 .result-panel {
   margin-top: 25px;
-
-  min-height: 165px;
-
-  padding: 28px;
-
-  border-radius: 20px;
-
-  background:
-    linear-gradient(
-      110deg,
-      #f5dcd4 0%,
-      #f8e8e2 55%,
-      #efd0c7 100%
-    );
-
-  border: 1px solid #ebcfc6;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  position: relative;
-
-  overflow: hidden;
-}
-
-.result-panel::after {
-  content: "";
-
-  position: absolute;
-
-  width: 170px;
-  height: 170px;
-
-  border-radius: 50%;
-
-  background: rgba(255, 255, 255, 0.23);
-
-  right: -55px;
-  top: -75px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fbf4f7;
 }
 
 .result-label {
-  color: var(--pink-dark);
-
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 4px;
-
-  margin-bottom: 12px;
-
-  position: relative;
-  z-index: 1;
+  margin: 0 0 7px;
 }
 
 .result-panel h2 {
-  font-family: Georgia, "Times New Roman", serif;
-
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: 400;
-
-  line-height: 1.15;
-
-  color: #2f2421;
-
-  position: relative;
-  z-index: 1;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 #conversionDetails {
-  color: #8c6f67;
-
-  font-size: 12px;
-
-  margin-top: 10px;
-
-  position: relative;
-  z-index: 1;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
-
-/* =========================================================
-   QUICK CONVERSIONS
-   ========================================================= */
-
 .quick-section {
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
 .quick-title {
-  color: var(--pink-dark);
-
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 4px;
-
-  margin-bottom: 15px;
+  margin: 0 0 11px;
 }
 
 .quick-buttons {
   display: flex;
   flex-wrap: wrap;
-
-  gap: 10px;
+  gap: 9px;
 }
 
 .quick-buttons button {
-  background: #fffaf7;
-
-  border: 1px solid #e4c6bd;
-
-  border-radius: 100px;
-
-  color: #725750;
-
-  padding: 11px 18px;
-
-  font-family: inherit;
-  font-size: 11px;
-
+  min-height: 38px;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pink-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
   cursor: pointer;
-
-  transition: 0.2s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
 .quick-buttons button:hover {
-  background: var(--pink);
-
-  border-color: var(--pink);
-
-  color: white;
-
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  border-color: rgba(186, 61, 127, 0.32);
+  background: var(--blush);
 }
 
-
-/* =========================================================
-   AVAILABLE CONVERSIONS
-   ========================================================= */
-
 .info-panel {
-  background: rgba(255, 250, 247, 0.9);
-
-  border: 1px solid rgba(220, 190, 180, 0.55);
-
-  border-radius: 24px;
-
-  padding: 30px;
-
-  box-shadow: var(--shadow);
+  padding: 4px 2px 0;
+  border-top: 1px solid var(--border);
 }
 
 .panel-label {
-  color: var(--pink-dark);
+  margin: 19px 0 12px;
+}
 
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 4px;
-
-  margin-bottom: 20px;
+.conversion-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 22px;
 }
 
 .conversion-list > div {
-  position: relative;
-
-  padding: 20px 5px;
-
-  border-bottom: 1px solid #eadbd5;
-
-  transition:
-    padding-left 0.2s ease,
-    background 0.2s ease;
-}
-
-.conversion-list > div:last-child {
-  border-bottom: none;
-}
-
-.conversion-list > div:hover {
-  padding-left: 10px;
+  min-width: 0;
+  padding: 8px 0;
 }
 
 .conversion-list span {
   display: inline-block;
-
-  min-width: 35px;
-
-  color: var(--pink-dark);
-
-  font-size: 10px;
+  min-width: 27px;
+  color: var(--pink-deep);
+  font-size: 0.68rem;
+  font-weight: 800;
 }
 
 .conversion-list strong {
-  color: #3b2d29;
-
-  font-size: 13px;
-  letter-spacing: 0.5px;
+  color: var(--text);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
 }
 
 .conversion-list p {
-  margin-top: 6px;
-  margin-left: 39px;
-
-  color: #9a8179;
-
-  font-size: 11px;
+  margin: 4px 0 0 27px;
+  color: var(--muted);
+  font-size: 0.72rem;
   line-height: 1.5;
 }
 
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
 footer {
-  max-width: 1310px;
-
-  margin: 10px auto 0;
-
-  padding: 28px 0 35px;
-
-  border-top: 1px solid #dfc8c0;
-
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
+  padding: 20px 0 28px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
 
-  color: #9a756b;
-
-  font-size: 10px;
-  letter-spacing: 2px;
+footer p {
+  margin: 0;
 }
 
 footer a {
-  color: #8f5f55;
-
+  color: var(--pink-deep);
+  font-weight: 800;
   text-decoration: none;
-
-  font-weight: 700;
-
-  transition: 0.2s ease;
 }
 
 footer a:hover {
-  color: #4c332d;
+  color: var(--text);
 }
 
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-  .converter-section {
-    grid-template-columns: 1fr;
-  }
-
-  .header-content h1 {
-    letter-spacing: -2px;
-  }
-
-  footer {
-    margin-left: 30px;
-    margin-right: 30px;
-  }
-
-}
-
-@media (max-width: 650px) {
-
+@media (max-width: 680px) {
   .converter-header,
-  .converter-section {
-    padding-left: 18px;
-    padding-right: 18px;
+  .converter-section,
+  footer {
+    width: min(100% - 32px, 520px);
   }
 
   .header-content {
-    margin-top: 40px;
-  }
-
-  .header-content h1 {
-    font-size: 48px;
-  }
-
-  .converter-card,
-  .info-panel {
-    padding: 20px;
-    border-radius: 18px;
+    margin-top: 28px;
   }
 
   .conversion-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
   }
 
   .swap-button {
-    margin: auto;
-
-    transform: rotate(90deg);
+    margin: 0 auto;
   }
 
   .swap-button:hover {
-    transform: rotate(270deg);
+    background: var(--pink-deep);
+    color: #fff;
   }
 
-  .unit-box input {
-    font-size: 28px;
+  .conversion-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 16px;
   }
 
   footer {
-    margin-left: 18px;
-    margin-right: 18px;
-
     flex-direction: column;
   }
+}
 
+@media (max-width: 380px) {
+  .converter-card {
+    padding: 18px;
+  }
+
+  .conversion-list {
+    grid-template-columns: 1fr;
+  }
 }

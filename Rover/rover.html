@@ -21,7 +21,7 @@
 
   <header class="rover-header">
 
-    <a href="index.html#projects" class="back-button">
+    <a href="../index.html#projects" class="back-button">
       ← BACK TO PORTFOLIO
     </a>
 
@@ -31,8 +31,7 @@
       <h1>AUTONOMOUS<br>LUNAR ROVER</h1>
 
       <p class="subtitle">
-        Navigate the lunar surface, avoid obstacles, collect regolith,
-        and complete the mission.
+        Autonomous navigation, terrain avoidance, and lunar sample collection.
       </p>
     </div>
 
@@ -46,19 +45,33 @@
 
       <div class="game-topbar">
 
-        <div>
+        <div class="metric">
           <span class="label">MODE</span>
           <span id="modeDisplay">MANUAL</span>
+          <span id="modeIndicator" class="mode-indicator" data-mode="manual">MANUAL CONTROL</span>
         </div>
 
-        <div>
-          <span class="label">BATTERY</span>
-          <span id="batteryDisplay">100%</span>
+        <div class="metric battery-metric">
+          <div class="metric-heading">
+            <span class="label">BATTERY</span>
+            <span id="batteryDisplay">100%</span>
+          </div>
+          <div
+            id="batteryMeter"
+            class="battery-track"
+            role="meter"
+            aria-label="Battery level"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="100"
+          >
+            <span id="batteryBar" class="battery-fill"></span>
+          </div>
         </div>
 
-        <div>
+        <div class="metric">
           <span class="label">REGOLITH</span>
-          <span id="regolithDisplay">0</span>
+          <span><span id="regolithDisplay">0</span> SAMPLES</span>
         </div>
 
       </div>
@@ -69,22 +82,23 @@
         id="roverCanvas"
         width="800"
         height="600"
+        aria-label="Lunar mission map. Move the rover with WASD or arrow keys."
       ></canvas>
 
 
       <!-- CONTROLS -->
       <div class="game-controls">
 
-        <button id="manualButton">
+        <button id="manualButton" type="button" aria-pressed="true">
           MANUAL
         </button>
 
-        <button id="autoButton">
-          AUTO
+        <button id="autoButton" type="button" aria-pressed="false">
+          AUTONOMOUS
         </button>
 
-        <button id="resetButton">
-          NEW MISSION
+        <button id="resetButton" type="button">
+          RESET MISSION
         </button>
 
       </div>
@@ -121,6 +135,16 @@
           <strong id="routeDisplay">NONE</strong>
         </div>
 
+        <div class="info-row">
+          <span>MISSION TARGET</span>
+          <strong id="targetDisplay">REGOLITH ZONE</strong>
+        </div>
+
+        <div class="info-row">
+          <span>POSITION</span>
+          <strong id="positionDisplay">X: 2 · Y: 2</strong>
+        </div>
+
       </div>
 
 
@@ -150,10 +174,10 @@
 
         <h3>MISSION MAP</h3>
 
-        <p>■ Rover</p>
-        <p>● Rock / Crater</p>
-        <p>▦ Regolith Zone</p>
-        <p>◆ Berm / Dump Zone</p>
+        <p><span class="legend-symbol rover-symbol"></span>Rover</p>
+        <p><span class="legend-symbol crater-symbol"></span>Blocked crater</p>
+        <p><span class="legend-symbol regolith-symbol"></span>Regolith zone</p>
+        <p><span class="legend-symbol berm-symbol"></span>Berm / dump zone</p>
 
       </div>
 
