@@ -1278,3 +1278,190 @@ h1 {
     align-items: flex-start;
   }
 }
+
+/* Experience — My Takeaway */
+
+.experience-takeaway {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(201, 92, 139, 0.18);
+}
+
+.experience-takeaway .takeaway-label {
+  color: #c83e83;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin: 0 0 10px;
+}
+
+.experience-takeaway p:not(.takeaway-label) {
+  color: #55545a;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ABOUT ME — Improved readability */
+
+.about-section .about-card {
+  padding: 36px 40px;
+}
+
+.about-section .about-intro {
+  color: #c83e83;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+}
+
+.about-section .about-body {
+  display: block;
+  max-width: 850px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: #55545a;
+  margin: 0 0 22px;
+}
+
+.about-section .about-body:last-child {
+  margin-bottom: 0;
+}
+
+.about-section .about-body strong {
+  color: #303035;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .about-section .about-card {
+    padding: 24px;
+  }
+
+  .about-section .about-body {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+}
+
+/* Experience — Short Personal Reflections */
+
+.timeline-body .experience-reflection {
+  margin: 22px 0 0;
+  padding: 16px 0 0;
+
+  border-top: 1px solid rgba(201, 92, 139, 0.18);
+
+  color: #777078;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* ABOUT ME — Clean Editorial Layout */
+
+.about-section .about-card {
+  padding: 36px 42px;
+  border-radius: 24px;
+}
+
+.about-section .about-intro {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  color: #c83e83;
+  margin: 0 0 20px;
+}
+
+.about-section .about-body {
+  max-width: 900px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #55545a;
+  margin: 0 0 14px;
+}
+
+.about-section .about-body:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .about-section .about-card {
+    padding: 24px;
+  }
+
+  .about-section .about-intro {
+    font-size: 17px;
+    margin-bottom: 16px;
+  }
+
+  .about-section .about-body {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+}
+
+/* ✨ Subtle Sparkle Effect — About Me */
+
+.about-section .about-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Sparkles */
+.about-section .about-card::before,
+.about-section .about-card::after {
+  content: "✦";
+  position: absolute;
+  pointer-events: none;
+  color: #d85b98;
+  z-index: 0;
+  animation: softSparkle 3.5s ease-in-out infinite;
+}
+
+.about-section .about-card::before {
+  top: 22px;
+  right: 35px;
+  font-size: 24px;
+}
+
+.about-section .about-card::after {
+  bottom: 25px;
+  right: 65px;
+  font-size: 16px;
+  animation-delay: 1.5s;
+}
+
+.about-section .about-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes softSparkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.75) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15) rotate(20deg);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .about-section .about-card::before,
+  .about-section .about-card::after {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+
