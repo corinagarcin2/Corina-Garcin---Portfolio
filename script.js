@@ -13,6 +13,79 @@
     });
   });
 
+  const projectCarousel = document.querySelector('.project-carousel');
+  if (projectCarousel) {
+    const projectTrack = projectCarousel.querySelector('.project-showcase');
+    const projectSlides = projectCarousel.querySelectorAll('.project-feature');
+    const projectStatus = projectCarousel.querySelector('.project-carousel-status');
+    const carouselButtons = projectCarousel.querySelectorAll('[data-project-direction]');
+    let currentProject = 0;
+    let touchStartX = 0;
+
+    function showProject(index) {
+      currentProject = (index + projectSlides.length) % projectSlides.length;
+      projectTrack.style.transform = 'translateX(-' + (currentProject * 100) + '%)';
+      projectStatus.textContent = 'Project ' + (currentProject + 1) + ' of ' + projectSlides.length;
+    }
+
+    carouselButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        const direction = button.getAttribute('data-project-direction');
+        showProject(currentProject + (direction === 'next' ? 1 : -1));
+      });
+    });
+
+    projectCarousel.addEventListener('pointerdown', function (event) {
+      touchStartX = event.clientX;
+    });
+
+    projectCarousel.addEventListener('pointerup', function (event) {
+      const swipeDistance = event.clientX - touchStartX;
+      if (Math.abs(swipeDistance) < 50) return;
+      showProject(currentProject + (swipeDistance < 0 ? 1 : -1));
+    });
+
+    showProject(0);
+  }
+
+  const leadershipSection = document.getElementById('leadership');
+  if (leadershipSection) {
+    const leadershipToggles = leadershipSection.querySelectorAll('.leadership-toggle');
+    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    leadershipToggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        const panel = document.getElementById(toggle.getAttribute('aria-controls'));
+        const label = toggle.querySelector('.leadership-toggle-label');
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+        if (!panel || !label) return;
+
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        label.textContent = isExpanded ? 'Read More' : 'Show Less';
+
+        if (isExpanded) {
+          panel.classList.remove('is-open');
+          panel.style.maxHeight = '0px';
+
+          if (isReducedMotion) {
+            panel.hidden = true;
+          } else {
+            panel.addEventListener('transitionend', function hidePanel(event) {
+              if (event.propertyName === 'max-height' && toggle.getAttribute('aria-expanded') === 'false') {
+                panel.hidden = true;
+              }
+            }, { once: true });
+          }
+        } else {
+          panel.hidden = false;
+          panel.classList.add('is-open');
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        }
+      });
+    });
+  }
+
   const revealEls = document.querySelectorAll('.reveal');
   if (!('IntersectionObserver' in window) || revealEls.length === 0) {
     revealEls.forEach(function (el) {
@@ -33,6 +106,23 @@
         if (skillsGrid) {
           skillsGrid.classList.add('reveal-ready');
         }
+
+        const aboutEditorial = entry.target.querySelector('.about-editorial');
+        if (aboutEditorial) {
+          aboutEditorial.classList.add('is-revealed');
+        }
+
+        const leadershipShowcase = entry.target.classList.contains('leadership-showcase')
+          ? entry.target
+          : entry.target.querySelector('.leadership-showcase');
+        if (leadershipShowcase) {
+          leadershipShowcase.classList.add('is-revealed');
+        }
+
+        const experienceTimeline = entry.target.querySelector('.timeline');
+        if (experienceTimeline) {
+          experienceTimeline.classList.add('is-revealed');
+        }
         
         obs.unobserve(entry.target);
       }
@@ -46,69 +136,49 @@
     observer.observe(el);
   });
 
-  // Skills Interactive Animations
-  const skillsSection = document.getElementById('skills');
-  if (skillsSection) {
-    const skillsGrid = skillsSection.querySelector('.skills-grid');
-    const skillItems = skillsSection.querySelectorAll('.skill-card li');
-    const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobileOrTouch = () => {
-      return window.innerWidth < 768 || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-    };
+  const faqSection = document.getElementById('faq');
+  if (faqSection && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    faqSection.querySelectorAll('.faq-item').forEach(function (item) {
+      const summary = item.querySelector('summary');
+      if (!summary) return;
 
-    // Only enable magnetic hover on desktop without reduced motion
-    if (!isReducedMotion && !isMobileOrTouch() && skillItems.length > 0) {
-      let mouseX = 0;
-      let mouseY = 0;
-      let isInSkillsSection = false;
+      summary.addEventListener('click', function (event) {
+        event.preventDefault();
 
-      skillsSection.addEventListener('mouseenter', function () {
-        isInSkillsSection = true;
-        if (skillsGrid) skillsGrid.classList.add('active-cursor');
-      });
+        if (item.dataset.animating === 'true') return;
+        item.dataset.animating = 'true';
 
-      skillsSection.addEventListener('mouseleave', function () {
-        isInSkillsSection = false;
-        if (skillsGrid) skillsGrid.classList.remove('active-cursor');
-        skillItems.forEach(function (item) {
-          item.style.transform = 'translateY(0) scale(1)';
-        });
-      });
+        if (item.open) {
+          item.style.height = item.offsetHeight + 'px';
 
-      skillsSection.addEventListener('mousemove', function (e) {
-        if (!isInSkillsSection) return;
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+          requestAnimationFrame(function () {
+            item.style.height = summary.offsetHeight + 'px';
+          });
 
-        // Update cursor glow position
-        const glowEl = skillsGrid;
-        if (glowEl && glowEl.style) {
-          glowEl.style.setProperty('--cursor-x', mouseX + 'px');
-          glowEl.style.setProperty('--cursor-y', mouseY + 'px');
+          item.addEventListener('transitionend', function closeItem(event) {
+            if (event.propertyName !== 'height') return;
+            item.open = false;
+            item.style.height = '';
+            item.dataset.animating = 'false';
+          }, { once: true });
+        } else {
+          const closedHeight = summary.offsetHeight;
+          item.open = true;
+          const openHeight = item.scrollHeight;
+
+          item.style.height = closedHeight + 'px';
+          requestAnimationFrame(function () {
+            item.style.height = openHeight + 'px';
+          });
+
+          item.addEventListener('transitionend', function openItem(event) {
+            if (event.propertyName !== 'height') return;
+            item.style.height = '';
+            item.dataset.animating = 'false';
+          }, { once: true });
         }
-
-        // Magnetic hover effect for each skill
-        skillItems.forEach(function (item) {
-          const rect = item.getBoundingClientRect();
-          const itemX = rect.left + rect.width / 2;
-          const itemY = rect.top + rect.height / 2;
-
-          const distX = mouseX - itemX;
-          const distY = mouseY - itemY;
-          const distance = Math.sqrt(distX * distX + distY * distY);
-          const maxDistance = 120;
-
-          if (distance < maxDistance) {
-            const force = (maxDistance - distance) / maxDistance;
-            const moveX = (distX / distance) * force * 6;
-            const moveY = (distY / distance) * force * 6;
-            item.style.transform = 'translate(' + moveX + 'px, ' + moveY + 'px) scale(1.02)';
-          } else {
-            item.style.transform = 'translate(0, 0) scale(1)';
-          }
-        });
       });
-    }
+    });
   }
 
   // Contact Form Modal Functionality
