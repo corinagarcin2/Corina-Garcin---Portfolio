@@ -103,6 +103,38 @@
 
       </div>
 
+      <div class="map-view-controls" aria-label="Map view controls">
+        <button id="routeToggle" class="map-toggle is-active" type="button" aria-pressed="true">
+          ROUTE: ON
+        </button>
+        <button id="exploredToggle" class="map-toggle" type="button" aria-pressed="false">
+          EXPLORED: OFF
+        </button>
+      </div>
+
+      <div class="simulation-controls" aria-label="Simulation controls">
+        <button id="pauseButton" type="button" aria-pressed="false">PAUSE</button>
+        <label for="speedSelect">SPEED
+          <select id="speedSelect">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+          </select>
+        </label>
+        <button id="newMapButton" type="button">NEW MAP</button>
+      </div>
+
+      <section id="missionSummary" class="mission-summary" hidden aria-labelledby="missionSummaryTitle">
+        <h2 id="missionSummaryTitle">MISSION SUMMARY</h2>
+        <dl>
+          <div><dt>Elapsed time</dt><dd id="summaryElapsed">0:00</dd></div>
+          <div><dt>Distance traveled</dt><dd id="summaryDistance">0 cells</dd></div>
+          <div><dt>Samples collected</dt><dd id="summarySamples">0</dd></div>
+          <div><dt>Battery used</dt><dd id="summaryBattery">0%</dd></div>
+        </dl>
+        <button id="runAgainButton" type="button">RUN AGAIN</button>
+      </section>
+
     </section>
 
 
@@ -169,6 +201,11 @@
 
       </div>
 
+      <details class="how-it-works">
+        <summary>HOW IT WORKS</summary>
+        <p>The rover uses A* pathfinding to compare possible routes around blocked craters. It chooses an efficient path to the active mission target, then follows that route one grid cell at a time.</p>
+      </details>
+
 
       <div class="legend">
 
@@ -180,6 +217,15 @@
         <p><span class="legend-symbol berm-symbol"></span>Berm / dump zone</p>
 
       </div>
+
+
+      <section class="mission-log" aria-labelledby="missionLogTitle">
+        <div class="mission-log-heading">
+          <h3 id="missionLogTitle">MISSION LOG</h3>
+          <button id="clearLogButton" type="button">CLEAR</button>
+        </div>
+        <ol id="missionLogEntries" class="mission-log-entries" aria-live="polite"></ol>
+      </section>
 
     </aside>
 

@@ -19,13 +19,9 @@
 </head>
 
 <body>
-  <a href="../index.html" class="back-portfolio">
-  ← BACK TO PORTFOLIO
-</a>
-
   <header class="converter-header">
 
-    <a href="index.html#projects" class="back-button">
+    <a href="../index.html#projects" class="back-button">
       ← BACK TO PORTFOLIO
     </a>
 
@@ -68,6 +64,11 @@
           <option value="pressure">Pressure</option>
           <option value="energy">Energy</option>
           <option value="power">Power</option>
+          <option value="force">Force</option>
+          <option value="volume">Volume</option>
+          <option value="speed">Speed</option>
+          <option value="torque">Torque</option>
+          <option value="angle">Angle</option>
 
         </select>
 
@@ -146,7 +147,48 @@
           Select your units and the converter will calculate the result.
         </p>
 
+        <p id="conversionFormula" class="conversion-formula">
+          The conversion formula will appear here.
+        </p>
+
+        <div class="result-actions">
+          <button id="copyResultButton" type="button">COPY RESULT</button>
+          <span id="copyStatus" role="status" aria-live="polite"></span>
+          <label for="precisionSelect">PRECISION
+            <select id="precisionSelect">
+              <option value="auto" selected>Auto</option>
+              <option value="2">2 decimals</option>
+              <option value="4">4 decimals</option>
+              <option value="6">6 decimals</option>
+            </select>
+          </label>
+        </div>
+
       </div>
+
+
+      <section id="allUnitsPanel" class="all-units-panel" hidden aria-labelledby="allUnitsTitle">
+        <h2 id="allUnitsTitle">ALL UNITS</h2>
+        <p>Choose a row to set it as the destination unit.</p>
+        <div class="all-units-scroll">
+          <table>
+            <thead>
+              <tr><th scope="col">Unit</th><th scope="col">Converted value</th></tr>
+            </thead>
+            <tbody id="allUnitsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <section class="history-panel" aria-labelledby="historyTitle">
+        <div class="history-heading">
+          <h2 id="historyTitle">SESSION HISTORY</h2>
+          <button id="clearHistoryButton" type="button">CLEAR</button>
+        </div>
+        <p>Last five conversions from this visit. Select an entry to reload it.</p>
+        <ol id="historyList" class="history-list"></ol>
+      </section>
 
 
       <!-- QUICK EXAMPLES -->
@@ -172,7 +214,7 @@
           </button>
 
           <button type="button" data-category="power" data-value="1" data-from="hp" data-to="kW">
-            1 hp → kW
+            1 hp (mechanical) → kW
           </button>
 
         </div>
@@ -231,7 +273,37 @@
         <div>
           <span>07</span>
           <strong>POWER</strong>
-          <p>W · kW · hp</p>
+          <p>W · kW · hp (mechanical)</p>
+        </div>
+
+        <div>
+          <span>08</span>
+          <strong>FORCE</strong>
+          <p>N · kN · lbf</p>
+        </div>
+
+        <div>
+          <span>09</span>
+          <strong>VOLUME</strong>
+          <p>mL · L · m³ · in³ · ft³ · gal US</p>
+        </div>
+
+        <div>
+          <span>10</span>
+          <strong>SPEED</strong>
+          <p>m/s · km/h · mph · ft/s</p>
+        </div>
+
+        <div>
+          <span>11</span>
+          <strong>TORQUE</strong>
+          <p>N·m · lbf·ft</p>
+        </div>
+
+        <div>
+          <span>12</span>
+          <strong>ANGLE</strong>
+          <p>deg · rad</p>
         </div>
 
       </div>
@@ -244,10 +316,10 @@
   <footer>
 
     <p>
-      Designed & developed by Corina Garcin
+      Designed &amp; developed by Corina Garcin
     </p>
 
-    <a href="index.html#projects">
+    <a href="../index.html#projects">
       VIEW MORE PROJECTS →
     </a>
 

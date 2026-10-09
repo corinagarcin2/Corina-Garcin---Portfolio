@@ -39,6 +39,18 @@ let dumpZone = {
 let obstacles = [];
 let path = [];
 let autoTimer = null;
+let exploredCells = [];
+let showRoute = true;
+let showExplored = false;
+let batteryLowLogged = false;
+let batteryEmptyLogged = false;
+let isPaused = false;
+let speedMultiplier = 1;
+let missionStartedAt = null;
+let pauseStartedAt = null;
+let pausedDuration = 0;
+let distanceTraveled = 0;
+let customDestination = null;
 
 // ===============================
 // HTML ELEMENTS
@@ -61,6 +73,19 @@ const positionDisplay = document.getElementById("positionDisplay");
 const manualButton = document.getElementById("manualButton");
 const autoButton = document.getElementById("autoButton");
 const resetButton = document.getElementById("resetButton");
+const routeToggle = document.getElementById("routeToggle");
+const exploredToggle = document.getElementById("exploredToggle");
+const missionLogEntries = document.getElementById("missionLogEntries");
+const clearLogButton = document.getElementById("clearLogButton");
+const pauseButton = document.getElementById("pauseButton");
+const speedSelect = document.getElementById("speedSelect");
+const newMapButton = document.getElementById("newMapButton");
+const missionSummary = document.getElementById("missionSummary");
+const summaryElapsed = document.getElementById("summaryElapsed");
+const summaryDistance = document.getElementById("summaryDistance");
+const summarySamples = document.getElementById("summarySamples");
+const summaryBattery = document.getElementById("summaryBattery");
+const runAgainButton = document.getElementById("runAgainButton");
 
 // ===============================
 // CREATE LUNAR TERRAIN
@@ -68,28 +93,45 @@ const resetButton = document.getElementById("resetButton");
 
 function generateObstacles() {
 
-  obstacles = [];
-
   const numberOfObstacles = 38;
 
-  while (obstacles.length < numberOfObstacles) {
+  do {
+    obstacles = [];
 
-    const x = Math.floor(Math.random() * COLS);
-    const y = Math.floor(Math.random() * ROWS);
+    while (obstacles.length < numberOfObstacles) {
 
-    const blockedImportantArea =
-      (x === rover.x && y === rover.y) ||
-      (x === regolithZone.x && y === regolithZone.y) ||
-      (x === dumpZone.x && y === dumpZone.y);
+      const x = Math.floor(Math.random() * COLS);
+      const y = Math.floor(Math.random() * ROWS);
 
-    const alreadyExists = obstacles.some(
-      obstacle => obstacle.x === x && obstacle.y === y
-    );
+      const blockedImportantArea =
+        (x === rover.x && y === rover.y) ||
+        (x === regolithZone.x && y === regolithZone.y) ||
+        (x === dumpZone.x && y === dumpZone.y);
 
-    if (!blockedImportantArea && !alreadyExists) {
-      obstacles.push({ x, y });
+      const alreadyExists = obstacles.some(
+        obstacle => obstacle.x === x && obstacle.y === y
+      );
+
+      if (!blockedImportantArea && !alreadyExists) {
+        obstacles.push({ x, y });
+      }
     }
-  }
+  } while (!hasValidMissionPaths());
+
+  exploredCells = [];
+}
+
+function hasValidMissionPaths() {
+
+  const routeToSample = findPath(rover, regolithZone);
+  const routeToBerm = findPath(regolithZone, dumpZone);
+  const routeFromRoverToBerm = findPath(rover, dumpZone);
+
+  return (
+    routeToSample.length > 0 &&
+    routeToBerm.length > 0 &&
+    routeFromRoverToBerm.length > 0
+  );
 }
 
 // ===============================
@@ -102,11 +144,13 @@ function drawGame() {
 
   drawBackground();
   drawGrid();
+  drawExploredCells();
   drawPath();
   drawObstacles();
   drawRegolithZone();
   drawDumpZone();
   drawRover();
+  drawMapPolish();
 
 }
 
@@ -116,11 +160,7 @@ function drawGame() {
 
 function drawBackground() {
 
-  const terrain = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  terrain.addColorStop(0, "#d0d4dc");
-  terrain.addColorStop(0.52, "#b6bdc8");
-  terrain.addColorStop(1, "#9da7b5");
-  ctx.fillStyle = terrain;
+  ctx.fillStyle = "#f7efe9";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (let i = 0; i < 105; i++) {
@@ -128,8 +168,8 @@ function drawBackground() {
     const y = (i * 137 + 41) % canvas.height;
     const radius = 0.7 + (i % 4) * 0.45;
     ctx.fillStyle = i % 3 === 0
-      ? "rgba(72, 83, 99, 0.13)"
-      : "rgba(255, 255, 255, 0.2)";
+      ? "rgba(79, 2, 39, 0.12)"
+      : "rgba(255, 255, 255, 0.45)";
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
@@ -139,7 +179,7 @@ function drawBackground() {
     const x = (i * 181 + 70) % canvas.width;
     const y = (i * 97 + 56) % canvas.height;
     const radius = 8 + (i % 3) * 4;
-    ctx.fillStyle = "rgba(91, 104, 121, 0.045)";
+    ctx.fillStyle = "rgba(138, 18, 80, 0.07)";
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
@@ -152,7 +192,7 @@ function drawBackground() {
 
 function drawGrid() {
 
-  ctx.strokeStyle = "rgba(48, 63, 82, 0.12)";
+  ctx.strokeStyle = "rgba(79, 2, 39, 0.16)";
   ctx.lineWidth = 1;
 
   for (let x = 0; x <= canvas.width; x += GRID_SIZE) {
@@ -172,6 +212,61 @@ function drawGrid() {
     ctx.stroke();
 
   }
+
+}
+
+function drawMapPolish() {
+
+    ctx.save();
+    ctx.fillStyle = "#8a1250";
+    ctx.font = "800 7px Manrope, sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    for (let column = 0; column < COLS; column++) {
+      ctx.fillText(String(column + 1), column * GRID_SIZE + 3, 3);
+    }
+
+    for (let row = 0; row < ROWS; row++) {
+      ctx.fillText(String(row + 1), 3, row * GRID_SIZE + 3);
+    }
+
+    const compassX = canvas.width - 28;
+    const compassY = canvas.height - 28;
+    ctx.strokeStyle = "#4f0227";
+    ctx.fillStyle = "#ff9fe6";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(compassX, compassY, 12, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(compassX, compassY - 9);
+    ctx.lineTo(compassX - 4, compassY + 4);
+    ctx.lineTo(compassX + 4, compassY + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#4f0227";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText("N", compassX, compassY - 14);
+
+    const scaleX = 16;
+    const scaleY = canvas.height - 16;
+    const scaleWidth = GRID_SIZE * 3;
+    ctx.strokeStyle = "#4f0227";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(scaleX, scaleY);
+    ctx.lineTo(scaleX + scaleWidth, scaleY);
+    ctx.moveTo(scaleX, scaleY - 4);
+    ctx.lineTo(scaleX, scaleY + 4);
+    ctx.moveTo(scaleX + scaleWidth, scaleY - 4);
+    ctx.lineTo(scaleX + scaleWidth, scaleY + 4);
+    ctx.stroke();
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    ctx.fillText("3 CELLS", scaleX, scaleY - 5);
+    ctx.restore();
 }
 
 // ===============================
@@ -187,32 +282,19 @@ function drawObstacles() {
     const radius = GRID_SIZE * 0.34;
 
     ctx.save();
-    ctx.shadowColor = "rgba(38, 48, 65, 0.28)";
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetY = 3;
-
-    const rim = ctx.createRadialGradient(
-      centerX - 4, centerY - 5, radius * 0.18,
-      centerX, centerY, radius
-    );
-    rim.addColorStop(0, "#465262");
-    rim.addColorStop(0.58, "#596577");
-    rim.addColorStop(0.78, "#929dab");
-    rim.addColorStop(1, "#788493");
-
-    ctx.fillStyle = rim;
+    ctx.fillStyle = "#8a1250";
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 
-    ctx.strokeStyle = "rgba(243, 247, 251, 0.52)";
+    ctx.strokeStyle = "#4f0227";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(centerX - 1, centerY - 1, radius * 0.78, Math.PI * 1.04, Math.PI * 1.9);
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(24, 34, 49, 0.45)";
+    ctx.fillStyle = "rgba(79, 2, 39, 0.42)";
     ctx.beginPath();
     ctx.ellipse(centerX + 1, centerY + 2, radius * 0.47, radius * 0.35, -0.25, 0, Math.PI * 2);
     ctx.fill();
@@ -234,23 +316,21 @@ function drawRegolithZone() {
     ? 0
     : (Math.sin(performance.now() / 430) + 1) / 2;
 
-  ctx.fillStyle = "rgba(255, 204, 102, 0.18)";
+  ctx.fillStyle = "rgba(233, 240, 93, 0.58)";
   ctx.fillRect(x + 2, y + 2, GRID_SIZE - 4, GRID_SIZE - 4);
-  ctx.strokeStyle = "rgba(181, 119, 47, 0.88)";
+  ctx.strokeStyle = "#8a1250";
   ctx.lineWidth = 1.5;
   ctx.strokeRect(x + 3, y + 3, GRID_SIZE - 6, GRID_SIZE - 6);
 
   ctx.save();
-  ctx.shadowColor = "rgba(255, 190, 78, 0.5)";
-  ctx.shadowBlur = 7 + pulse * 5;
-  ctx.strokeStyle = `rgba(255, 204, 102, ${0.45 + pulse * 0.35})`;
+  ctx.strokeStyle = `rgba(138, 18, 80, ${0.45 + pulse * 0.35})`;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.arc(centerX, centerY, 8 + pulse * 3, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 
-  ctx.fillStyle = "#75522d";
+  ctx.fillStyle = "#4f0227";
   ctx.font = "700 6px Manrope, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -271,22 +351,20 @@ function drawDumpZone() {
     ? 0
     : (Math.sin(performance.now() / 520) + 1) / 2;
 
-  ctx.fillStyle = "rgba(78, 185, 207, 0.12)";
+  ctx.fillStyle = "rgba(255, 159, 230, 0.5)";
   ctx.fillRect(x + 3, y + 3, GRID_SIZE - 6, GRID_SIZE - 6);
-  ctx.strokeStyle = "rgba(37, 130, 154, 0.95)";
+  ctx.strokeStyle = "#4f0227";
   ctx.lineWidth = 2;
   ctx.strokeRect(x + 5, y + 5, GRID_SIZE - 10, GRID_SIZE - 10);
 
   ctx.save();
-  ctx.shadowColor = "rgba(107, 231, 255, 0.6)";
-  ctx.shadowBlur = 5 + pulse * 5;
-  ctx.strokeStyle = `rgba(61, 185, 211, ${0.52 + pulse * 0.35})`;
+  ctx.strokeStyle = `rgba(79, 2, 39, ${0.52 + pulse * 0.35})`;
   ctx.beginPath();
   ctx.arc(centerX, centerY, 7 + pulse * 3, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 
-  ctx.fillStyle = "#245d6c";
+  ctx.fillStyle = "#4f0227";
   ctx.font = "700 6px Manrope, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -307,44 +385,40 @@ function drawRover() {
   ctx.translate(centerX, centerY);
   ctx.rotate(roverHeading);
 
-  ctx.fillStyle = "rgba(34, 54, 78, 0.28)";
+  ctx.fillStyle = "rgba(79, 2, 39, 0.2)";
   ctx.beginPath();
   ctx.ellipse(1, 4, 14, 12, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.shadowColor = "rgba(72, 206, 236, 0.72)";
-  ctx.shadowBlur = 12;
-  ctx.fillStyle = "#293849";
+  ctx.fillStyle = "#4f0227";
   ctx.fillRect(-13, -11, 5, 9);
   ctx.fillRect(8, -11, 5, 9);
   ctx.fillRect(-13, 3, 5, 9);
   ctx.fillRect(8, 3, 5, 9);
-  ctx.shadowBlur = 0;
-
-  ctx.fillStyle = "#eef5fb";
+  ctx.fillStyle = "#e9f05d";
   ctx.fillRect(-9, -12, 18, 24);
-  ctx.strokeStyle = "#5c7187";
+  ctx.strokeStyle = "#4f0227";
   ctx.lineWidth = 1;
   ctx.strokeRect(-9, -12, 18, 24);
 
-  ctx.fillStyle = "#6389a8";
+  ctx.fillStyle = "#ff9fe6";
   ctx.fillRect(-6, -7, 12, 8);
-  ctx.fillStyle = "#6be7ff";
+  ctx.fillStyle = "#4f0227";
   ctx.fillRect(-4, -5, 3, 3);
   ctx.fillRect(2, -5, 3, 3);
 
-  ctx.strokeStyle = "#344c61";
+  ctx.strokeStyle = "#4f0227";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(0, -12);
   ctx.lineTo(0, -17);
   ctx.stroke();
-  ctx.fillStyle = "#ffcc66";
+  ctx.fillStyle = "#ff9fe6";
   ctx.beginPath();
   ctx.arc(0, -18, 2, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#1a2938";
+  ctx.fillStyle = "#4f0227";
   ctx.beginPath();
   ctx.moveTo(-4, -12);
   ctx.lineTo(0, -18);
@@ -419,7 +493,7 @@ function renderFrame() {
 
 function moveRover(dx, dy) {
 
-  if (mode !== "MANUAL") {
+  if (mode !== "MANUAL" || isPaused) {
     return;
   }
 
@@ -435,6 +509,10 @@ function attemptMove(newX, newY) {
     statusDisplay.textContent = "BATTERY EMPTY";
     missionStatus.textContent =
       "Mission stopped. Start a new mission.";
+    if (!batteryEmptyLogged) {
+      addMissionLog("Battery depleted. Mission movement stopped.");
+      batteryEmptyLogged = true;
+    }
     return false;
   }
 
@@ -464,11 +542,14 @@ function attemptMove(newX, newY) {
   const dx = newX - rover.x;
   const dy = newY - rover.y;
 
+  startMissionTracking();
   rover.x = newX;
   rover.y = newY;
+  distanceTraveled += Math.abs(dx) + Math.abs(dy);
   animateRoverTo(newX, newY, dx, dy);
 
   battery = Math.max(0, battery - 1);
+  logLowBattery();
 
   checkMission();
 
@@ -501,6 +582,7 @@ function checkMission() {
     missionStatus.classList.remove("is-highlighted");
     void missionStatus.offsetWidth;
     missionStatus.classList.add("is-highlighted");
+    addMissionLog("Regolith sample collected.");
     setTimeout(() => {
       missionStatus.classList.remove("is-highlighted");
     }, 900);
@@ -519,6 +601,8 @@ function checkMission() {
 
     missionStatus.textContent =
       "Regolith delivered successfully. Mission complete!";
+    addMissionLog("Mission complete. Regolith delivered to the berm zone.");
+    showMissionSummary();
 
     stopAuto();
 
@@ -592,6 +676,7 @@ function findPath(start, goal) {
   ];
 
   const closedSet = new Set();
+  exploredCells = [];
 
   while (openSet.length > 0) {
 
@@ -609,6 +694,7 @@ function findPath(start, goal) {
     }
 
     closedSet.add(key);
+    exploredCells.push({ x: current.x, y: current.y });
 
     if (
       current.x === goal.x &&
@@ -696,7 +782,7 @@ function heuristic(a, b) {
 
 function drawPath() {
 
-  if (path.length === 0) {
+  if (!showRoute || path.length === 0) {
     return;
   }
 
@@ -708,10 +794,8 @@ function drawPath() {
   ctx.save();
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
-  ctx.strokeStyle = "rgba(40, 177, 211, 0.78)";
+  ctx.strokeStyle = "#ff9fe6";
   ctx.lineWidth = 3;
-  ctx.shadowColor = "rgba(34, 187, 224, 0.68)";
-  ctx.shadowBlur = 8;
   ctx.beginPath();
   ctx.moveTo(points[0].x * GRID_SIZE, points[0].y * GRID_SIZE);
 
@@ -720,8 +804,7 @@ function drawPath() {
   });
 
   ctx.stroke();
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = "#e8fbff";
+  ctx.fillStyle = "#e9f05d";
 
   path.forEach((step, index) => {
     const centerX = (step.x + 0.5) * GRID_SIZE;
@@ -736,6 +819,45 @@ function drawPath() {
   ctx.restore();
 }
 
+function drawExploredCells() {
+
+  if (!showExplored) {
+    return;
+  }
+
+  ctx.fillStyle = "rgba(255, 159, 230, 0.22)";
+
+  exploredCells.forEach(cell => {
+    ctx.fillRect(
+      cell.x * GRID_SIZE + 12,
+      cell.y * GRID_SIZE + 12,
+      GRID_SIZE - 24,
+      GRID_SIZE - 24
+    );
+  });
+}
+
+function addMissionLog(message) {
+
+  const item = document.createElement("li");
+  const timestamp = document.createElement("time");
+  timestamp.dateTime = new Date().toISOString();
+  timestamp.textContent = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+
+  item.append(timestamp, document.createTextNode(message));
+  missionLogEntries.append(item);
+
+  while (missionLogEntries.children.length > 50) {
+    missionLogEntries.firstElementChild.remove();
+  }
+
+  missionLogEntries.scrollTop = missionLogEntries.scrollHeight;
+}
+
 // ===============================
 // AUTO MODE
 // ===============================
@@ -745,15 +867,14 @@ function startAuto() {
   stopAuto();
 
   mode = "AUTO";
+  addMissionLog("Autonomous mode enabled.");
+  startMissionTracking();
 
   controlDisplay.textContent = "AUTONOMOUS";
   modeDisplay.textContent = "AUTO";
   updateDisplays();
 
-  const goal =
-    carryingRegolith
-      ? dumpZone
-      : regolithZone;
+  const goal = getActiveGoal();
 
   path = findPath(rover, goal);
 
@@ -765,6 +886,8 @@ function startAuto() {
 
     missionStatus.textContent =
       "Autonomous navigation could not find a safe route.";
+    addMissionLog("No safe autonomous route is available.");
+    customDestination = null;
 
     setManual();
 
@@ -773,22 +896,50 @@ function startAuto() {
 
   routeDisplay.textContent =
     `${path.length} STEPS`;
+  addMissionLog(`Route planned with ${path.length} steps.`);
 
   statusDisplay.textContent =
     "NAVIGATING";
 
   missionStatus.textContent =
-    carryingRegolith
+    customDestination
+      ? "Autonomous route calculated to the selected destination."
+      : carryingRegolith
       ? "Autonomous route calculated to berm zone."
       : "Autonomous route calculated to regolith zone.";
 
   drawGame();
+
+  startAutoTimer();
+}
+
+function startAutoTimer() {
+
+  stopAuto();
+
+  if (mode !== "AUTO" || isPaused || path.length === 0) {
+    return;
+  }
 
   autoTimer = setInterval(() => {
 
     if (path.length === 0) {
 
       stopAuto();
+
+      if (
+        customDestination &&
+        rover.x === customDestination.x &&
+        rover.y === customDestination.y
+      ) {
+        statusDisplay.textContent = "ARRIVED";
+        missionStatus.textContent = "Custom destination reached.";
+        addMissionLog("Custom destination reached.");
+        customDestination = null;
+        updateDisplays();
+        drawGame();
+        return;
+      }
 
       if (carryingRegolith) {
 
@@ -807,10 +958,12 @@ function startAuto() {
 
     rover.x = nextStep.x;
     rover.y = nextStep.y;
+    distanceTraveled += Math.abs(dx) + Math.abs(dy);
     animateRoverTo(nextStep.x, nextStep.y, dx, dy);
 
     battery =
       Math.max(0, battery - 1);
+    logLowBattery();
 
     checkMission();
 
@@ -827,7 +980,7 @@ function startAuto() {
       stopAuto();
     }
 
-  }, 250);
+  }, 250 / speedMultiplier);
 }
 
 // ===============================
@@ -838,6 +991,7 @@ function setManual() {
 
   stopAuto();
 
+  const modeChanged = mode !== "MANUAL";
   mode = "MANUAL";
   path = [];
 
@@ -847,6 +1001,10 @@ function setManual() {
 
   updateDisplays();
   drawGame();
+
+  if (modeChanged) {
+    addMissionLog("Manual mode enabled.");
+  }
 }
 
 // ===============================
@@ -883,6 +1041,97 @@ resetButton.addEventListener(
   resetMission
 );
 
+pauseButton.addEventListener("click", () => {
+  isPaused = !isPaused;
+  pauseButton.setAttribute("aria-pressed", String(isPaused));
+  pauseButton.textContent = isPaused ? "RESUME" : "PAUSE";
+
+  if (isPaused) {
+    pauseStartedAt = performance.now();
+    stopAuto();
+    addMissionLog("Simulation paused.");
+  } else {
+    if (pauseStartedAt !== null) {
+      pausedDuration += performance.now() - pauseStartedAt;
+      pauseStartedAt = null;
+    }
+    startAutoTimer();
+    addMissionLog("Simulation resumed.");
+  }
+});
+
+speedSelect.addEventListener("change", () => {
+  speedMultiplier = Number(speedSelect.value);
+  addMissionLog(`Simulation speed set to ${speedMultiplier}x.`);
+  startAutoTimer();
+});
+
+newMapButton.addEventListener("click", () => {
+  resetMission();
+  addMissionLog("New map generated with valid routes to both mission goals.");
+});
+
+runAgainButton.addEventListener("click", resetMission);
+
+routeToggle.addEventListener("click", () => {
+  showRoute = !showRoute;
+  routeToggle.classList.toggle("is-active", showRoute);
+  routeToggle.setAttribute("aria-pressed", String(showRoute));
+  routeToggle.textContent = `ROUTE: ${showRoute ? "ON" : "OFF"}`;
+  drawGame();
+});
+
+exploredToggle.addEventListener("click", () => {
+  showExplored = !showExplored;
+  exploredToggle.classList.toggle("is-active", showExplored);
+  exploredToggle.setAttribute("aria-pressed", String(showExplored));
+  exploredToggle.textContent = `EXPLORED: ${showExplored ? "ON" : "OFF"}`;
+  drawGame();
+});
+
+canvas.addEventListener("click", event => {
+  if (mode !== "AUTO") {
+    missionStatus.textContent =
+      "Switch to autonomous mode before setting a destination.";
+    return;
+  }
+
+  const bounds = canvas.getBoundingClientRect();
+  const x = Math.floor(
+    ((event.clientX - bounds.left) / bounds.width) * canvas.width / GRID_SIZE
+  );
+  const y = Math.floor(
+    ((event.clientY - bounds.top) / bounds.height) * canvas.height / GRID_SIZE
+  );
+
+  if (x < 0 || x >= COLS || y < 0 || y >= ROWS) {
+    return;
+  }
+
+  const isBlocked = obstacles.some(
+    obstacle => obstacle.x === x && obstacle.y === y
+  );
+
+  if (isBlocked) {
+    missionStatus.textContent = "That destination is blocked by a crater.";
+    addMissionLog("Blocked destination selected.");
+    return;
+  }
+
+  if (x === rover.x && y === rover.y) {
+    missionStatus.textContent = "The rover is already at that destination.";
+    return;
+  }
+
+  customDestination = { x, y };
+  addMissionLog(`Custom destination selected at X: ${x + 1}, Y: ${y + 1}.`);
+  startAuto();
+});
+
+clearLogButton.addEventListener("click", () => {
+  missionLogEntries.replaceChildren();
+});
+
 // ===============================
 // RESET MISSION
 // ===============================
@@ -890,6 +1139,9 @@ resetButton.addEventListener(
 function resetMission() {
 
   stopAuto();
+  isPaused = false;
+  pauseButton.setAttribute("aria-pressed", "false");
+  pauseButton.textContent = "PAUSE";
 
   mode = "MANUAL";
 
@@ -905,6 +1157,15 @@ function resetMission() {
   regolith = 0;
   carryingRegolith = false;
   path = [];
+  exploredCells = [];
+  customDestination = null;
+  batteryLowLogged = false;
+  batteryEmptyLogged = false;
+  missionStartedAt = null;
+  pauseStartedAt = null;
+  pausedDuration = 0;
+  distanceTraveled = 0;
+  missionSummary.hidden = true;
 
   generateObstacles();
 
@@ -919,6 +1180,7 @@ function resetMission() {
   updateDisplays();
 
   drawGame();
+  addMissionLog("Mission reset. New crater map generated.");
 }
 
 // ===============================
@@ -952,10 +1214,57 @@ function updateDisplays() {
   targetDisplay.textContent =
     statusDisplay.textContent === "MISSION COMPLETE"
       ? "MISSION COMPLETE"
+      : customDestination
+        ? "CUSTOM DESTINATION"
       : carryingRegolith
         ? "BERM / DUMP ZONE"
         : "REGOLITH ZONE";
 
+}
+
+function logLowBattery() {
+
+  if (battery <= 25 && !batteryLowLogged) {
+    addMissionLog(`Battery low at ${battery}%.`);
+    batteryLowLogged = true;
+  }
+}
+
+function getActiveGoal() {
+  return customDestination || (carryingRegolith ? dumpZone : regolithZone);
+}
+
+function startMissionTracking() {
+  if (missionStartedAt === null) {
+    missionStartedAt = performance.now();
+  }
+}
+
+function getElapsedMissionTime() {
+  if (missionStartedAt === null) {
+    return 0;
+  }
+
+  const currentPause = isPaused && pauseStartedAt !== null
+    ? performance.now() - pauseStartedAt
+    : 0;
+
+  return performance.now() - missionStartedAt - pausedDuration - currentPause;
+}
+
+function formatElapsedTime(milliseconds) {
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
+
+function showMissionSummary() {
+  summaryElapsed.textContent = formatElapsedTime(getElapsedMissionTime());
+  summaryDistance.textContent = `${distanceTraveled} cells`;
+  summarySamples.textContent = regolith;
+  summaryBattery.textContent = `${100 - battery}%`;
+  missionSummary.hidden = false;
 }
 
 // ===============================
@@ -967,6 +1276,8 @@ generateObstacles();
 updateDisplays();
 
 drawGame();
+
+addMissionLog("Mission ready.");
 
 if (!reducedMotion) {
   requestAnimationFrame(renderFrame);
